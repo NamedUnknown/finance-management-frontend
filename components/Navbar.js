@@ -3,32 +3,26 @@ import Styles from "../styles/Navbar.module.css"
 import Button from '@mui/material/Button';
 import { Link } from "@mui/material";
 
-export default class Navbar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: props.user,
-      isAuthenticated: props.isAuthenticated,
-      theme: props.theme,
-    };
-  }
+import { useSelector, useDispatch } from "react-redux"
+import { logOutUser } from "../store/authSlice";
 
-  handleLogOut = () => {
-    this.setState({
-      ...this.state,
-      user: {},
-      isAuthenticated: false,
-    });
-  }
+export default function Navbar() {
 
-  authUserOperation() {
-    if (this.state?.isAuthenticated) {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
+
+  function handleLogOut() { dispatch(logOutUser()) };
+
+
+  function authUserOperation() {
+    if (isAuthenticated) {
       return (
         <div className={Styles.authenticated_container}>
           <div className={Styles.auth_message}>
-            Hallo {this.state?.user?.name == null ? "user" : this.state?.user.name}!
+            Hallo {user.name == null ? "user" : user.name}!
           </div>
-          <Button variant="outlined" onClick={this.handleLogOut}>Log Out</Button>
+          <Button variant="outlined" onClick={() => handleLogOut()} className={Styles.logout_button}>Log Out</Button>
         </div>
       );
     } else {
@@ -49,19 +43,16 @@ export default class Navbar extends React.Component {
     }
   }
 
-  render() {
-    return (
-      <div className={Styles.navbar_container}>
-        <div className={Styles.options_container}>
-          {this.state?.isAuthenticated ? <div></div> : <div></div>}
-        </div>
-        <div className={Styles.mid_container}>
-          {this.state?.isAuthenticated ? <div></div> : <div></div>}
-        </div>
-        <div className={Styles.auth_container}>
-          {this.authUserOperation()}
-        </div>
-      </div>)
-      ;
-  }
+  return (
+    <div className={Styles.navbar_container}>
+      <div className={Styles.options_container}>
+        {isAuthenticated ? <div></div> : <div></div>}
+      </div>
+      <div className={Styles.mid_container}>
+        {isAuthenticated ? <div></div> : <div></div>}
+      </div>
+      <div className={Styles.auth_container}>
+        {authUserOperation()}
+      </div>
+    </div>);
 }

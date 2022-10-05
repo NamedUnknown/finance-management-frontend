@@ -1,5 +1,15 @@
 import '../styles/globals.css'
+import { Provider } from "react-redux";
+import { store } from "../store/store"
 
-export default function FinanceManagerFrontend({ Component, pageProps }) {
-  return <Component {...pageProps} />
+function FinanceManagerFrontend({ Component, pageProps }) {
+  return (
+    <>
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </ Provider>
+    </>
+  )
 }
+
+export default FinanceManagerFrontend;

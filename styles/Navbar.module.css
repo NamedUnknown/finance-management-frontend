@@ -42,6 +42,11 @@
     font-size: 14px;
 }
 
+.logout_button {
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
 .register_button {
     width: 80%;
     min-width: fit-content;

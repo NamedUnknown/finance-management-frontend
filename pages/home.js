@@ -4,14 +4,10 @@ import Styles from "../styles/Home.module.css"
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isAuthenticated: props.isAuthenticated,
-      user: props.user
-    };
   }
 
   render() {
-    if (this.state.isAuthenticated) {
+    if (false) {
       return (
         <div className={Styles.home_container}>
           <div className={Styles.profile_container}></div>
