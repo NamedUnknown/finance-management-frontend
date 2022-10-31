@@ -1,58 +1,76 @@
-import React from "react";
-import Styles from "../styles/Navbar.module.css"
-import Button from '@mui/material/Button';
-import { Link } from "@mui/material";
+import Box from '@mui/material/Box';
+import AppBar from '@mui/material/AppBar';
 
 import { useSelector, useDispatch } from "react-redux"
-import { logOutUser } from "../store/authSlice";
+import { logOutUser, getIsAuthenticated, getUser } from "../store/authSlice";
 
 export default function Navbar() {
-
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const user = useSelector((state) => state.auth.user);
-
-  function handleLogOut() { dispatch(logOutUser()) };
-
-
-  function authUserOperation() {
-    if (isAuthenticated) {
-      return (
-        <div className={Styles.authenticated_container}>
-          <div className={Styles.auth_message}>
-            Hallo {user.name == null ? "user" : user.name}!
-          </div>
-          <Button variant="outlined" onClick={() => handleLogOut()} className={Styles.logout_button}>Log Out</Button>
-        </div>
-      );
-    } else {
-      return (
-        <div className={Styles.auth_buttons_container}>
-          <Link href="/login" style={{ textDecoration: "none" }}>
-            <div className={Styles.login_button}>
-              Log in
-            </div>
-          </Link>
-          <Link href="/register" style={{ textDecoration: "none" }}>
-            <div className={Styles.register_button}>
-              Register
-            </div>
-          </Link>
-        </div>
-      );
+  const isAuthenticated = useSelector(getIsAuthenticated);
+  const user = useSelector(getUser);
+  const loginMethods = [
+    {
+      name: "github",
+      img: "/github.png"
+    },
+    {
+      name: "google",
+      img: "/google.png"
     }
-  }
+  ];
 
   return (
-    <div className={Styles.navbar_container}>
-      <div className={Styles.options_container}>
-        {isAuthenticated ? <div></div> : <div></div>}
-      </div>
-      <div className={Styles.mid_container}>
-        {isAuthenticated ? <div></div> : <div></div>}
-      </div>
-      <div className={Styles.auth_container}>
-        {authUserOperation()}
-      </div>
-    </div>);
+    <Box sx={{ flexGrow: 1, p: "10px" }}>
+      <AppBar position="static" sx={{
+        backgroundColor: "#272730",
+        borderRadius: "50px",
+        height: "fit-content",
+        py: "10px",
+        px: "20px"
+      }}>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+        }}>
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            mr: 3
+          }}>
+            LOG IN:
+          </Box>
+          {
+            loginMethods.map((method, index) =>
+              <Box key={index} sx={{
+                width: "38px", height: "38px",
+                borderRadius: 2,
+                backgroundColor: "white",
+                boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                backdropFilter: "blur(8.5px)",
+                "-webkit-backdrop-filter": "blur(8.5px)",
+                mx: "10px",
+                "&:hover": {
+                  transition: "0.3s ease-in",
+                  transform: "scale(1.07)"
+                },
+                cursor: "pointer"
+              }}>
+                <Box
+                  component="img"
+                  sx={{
+                    width: "30px",
+                    height: "30px",
+                    position: "relative",
+                    top: "4px",
+                    left: "4px",
+                  }}
+                  src={method.img}
+                  alt={method.name} />
+              </Box>)
+          }
+        </Box>
+      </AppBar>
+    </Box>
+  );
 }

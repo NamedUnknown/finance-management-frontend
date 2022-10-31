@@ -1,10 +1,9 @@
-import { useState } from "react";
 import Navbar from "../components/Navbar";
-import Home from "./home";
-import Styles from "../styles/App.module.css";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-function App(store) {
+import Box from "@mui/material/Box"
+
+function App() {
   const theme = createTheme({
     typography: {
       fontSize: 12,
@@ -12,7 +11,7 @@ function App(store) {
     palette: {
       primary: {
         main: "#403ffc",
-        light: "#5956f3",
+        dark: "#5956f3"
       },
       secondary: {
         dark: "#fc635a",
@@ -28,10 +27,9 @@ function App(store) {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className={Styles.app_container}>
+      <Box sx={{ height: "100vh", backgroundColor: "#0a0b1b" }}>
         <Navbar />
-        <Home />
-      </div>
+      </Box>
     </ThemeProvider>
   )
 }

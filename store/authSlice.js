@@ -9,17 +9,26 @@ const authSlice = createSlice({
   reducers: {
     updateUserData: (state, action) => {
       if (action.payload != null) {
-        state.user = action.payload;
-        state.isAuthenticated = true;
+        return {
+          ...state,
+          user: action.payload,
+          isAuthenticated: true
+        }
       }
     },
     logOutUser: (state) => {
-      state.user = {};
-      state.isAuthenticated = false;
+      return {
+        ...state,
+        user: {},
+        isAuthenticated: false
+      }
     },
   },
 })
 
 export const { logOutUser, updateUserData } = authSlice.actions;
+
+export const getIsAuthenticated = (state) => state.auth.isAuthenticated;
+export const getUser = (state) => state.auth.user;
 
 export const authReducer = authSlice.reducer;
