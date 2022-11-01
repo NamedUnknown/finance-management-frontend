@@ -1,37 +1,17 @@
 import Navbar from "../components/Navbar";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { getSession } from "next-auth/react"
 
-import Box from "@mui/material/Box"
 
-function App() {
-  const theme = createTheme({
-    typography: {
-      fontSize: 12,
-    },
-    palette: {
-      primary: {
-        main: "#403ffc",
-        dark: "#5956f3"
-      },
-      secondary: {
-        dark: "#fc635a",
-        main: "#fe9339",
-      },
-      background: {
-        main: "#0a0b1b",
-        accent: "#272730",
-        light: "#434250"
-      },
-    },
-  });
-
+export default function App({ session }) {
+  if (!session) console.log("No session");
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ height: "100vh", backgroundColor: "#0a0b1b" }}>
-        <Navbar />
-      </Box>
-    </ThemeProvider>
+    <div className="h-[100vh] bg-[#0a0b1b]">
+      <Navbar />
+    </div>
   )
 }
 
-export default App;
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  return { props: { session } }
+}

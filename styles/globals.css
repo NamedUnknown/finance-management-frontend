@@ -8,12 +8,6 @@ html, body {
   font-family: "JetBrains Mono";
 }
 
-/* @media (prefers-color-scheme: light) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: black;
-    background: black;
-  }
-} */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
