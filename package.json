@@ -8,6 +8,12 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:8080",
+      "ws": true
+    }
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
     "next": "12.3.1",
