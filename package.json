@@ -8,19 +8,16 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "proxy": {
-    "/api": {
-      "target": "http://localhost:8080",
-      "ws": true
-    }
-  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
+    "cookies-next": "^2.1.1",
+    "dotenv": "^16.0.3",
     "next": "12.3.1",
-    "next-auth": "^4.15.0",
+    "next-base64": "^1.1.0",
     "next-redux-wrapper": "^8.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
     "react-redux": "^8.0.4",
     "redux": "^4.2.0",
     "redux-devtools-extension": "^2.13.9",
