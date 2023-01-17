@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // images: {
-  //   domains: ["lh3.googleusercontent.com"]
-  // },
-  reactStrictMode: false,
+  typescript: {
+    tsconfigPath: "./tsconfig.json"
+  }
 }
 
 module.exports = nextConfig

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AUTH_REGISTER_URL } from "../components/api/Constants";
 import { fetchDataFromAPI } from "../components/api/FetchData";
 import { formatDateToJava } from "../common/formatDate";
+import { RequestParams } from "../model/requestParams";
 
 export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
@@ -48,25 +49,27 @@ export default function RegisterPage() {
 
   async function onSubmitClicked(event) {
     event.preventDefault();
-    const userData = JSON.stringify(
-      {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        created: null,
-        birthDay: formatDateToJava(birthDay),
-        enabled: true,
-      }
-    );
+    let userData = new Map<string, Object>();
+    userData.set("firstName", firstName);
+    userData.set("lastName", lastName);
+    userData.set("email", email);
+    userData.set("password", password);
+    userData.set("created", null);
+    userData.set("birthDay", formatDateToJava(birthDay));
+    userData.set("enabled", true);
+  
     try {
-      const response = await fetchDataFromAPI(AUTH_REGISTER_URL, {
-        "Content-Type": "application/json",
-      }, userData, "POST");
-      setResponseData({
-        message: response.body.message,
-        status: response.status
-      });
+      var params: RequestParams = {
+        apiUrl: AUTH_REGISTER_URL,
+        method: "POST",
+        body: userData
+      };
+
+      const response = await fetchDataFromAPI(params);
+      // setResponseData({
+      //   message: response.body.message,
+      //   status: response.status
+      // });
     } catch (err) {
       console.log(err);
     }

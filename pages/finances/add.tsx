@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { formatDateHTMLStyle, formatDateToJava } from "../../common/formatDate";
 
 import { FINANCES_URL } from "../../components/api/Constants";
 import { fetchDataFromAPI } from "../../components/api/FetchData";
 
 import { useRouter } from "next/router";
+import { Finance, financeToJSON } from "../../model/finance";
+import { RequestParams } from "../../model/requestParams";
 
 export default function AddFinance() {
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [spentAt, setSpentAt] = useState(formatDateHTMLStyle(new Date().toLocaleDateString()));
+  const [description, setDescription] = useState<string>("");
+  const [amount, setAmount] = useState<number | string>(0);
+  const [spentAt, setSpentAt] = useState<string>(formatDateHTMLStyle(new Date()));
 
   const router = useRouter();
 
@@ -20,17 +22,15 @@ export default function AddFinance() {
       property: "description",
       type: "text",
       value: description,
-      event: (event) => {
-        setDescription(event.target.value)
-      }
+      handler: (desc: string) => setDescription(desc)
     },
     {
       name: "Amount",
       property: "amount",
       type: "text",
       value: amount,
-      event: (event) => {
-        setAmount(event.target.value)
+      hanlder: (am: number) => {
+        setAmount(am);
       }
     },
     {
@@ -39,32 +39,30 @@ export default function AddFinance() {
       property: "spentAt",
       type: "date",
       value: spentAt,
-      event: (event) => {
-        setSpentAt(event.target.value)
-      }
+      handler: (sp: string) => setSpentAt(sp)
     }
   ];
 
-  async function onSubmit(event) {
+  async function onSubmit(event: FormEvent) : Promise<void> {
     event.preventDefault();
-    const jsonFinance = JSON.stringify(
-      {
-        id: 0,
-        description: description,
-        amount: Number(amount),
-        created: formatDateToJava(new Date().toLocaleDateString()),
-        spentAt: formatDateToJava(spentAt)
-      }
-    );
-    const response = await fetchDataFromAPI(
-      FINANCES_URL,
-      null,
-      jsonFinance,
-      "POST",
-      "include"
-    );
+    const finance: Finance = {
+      id: 0,
+      description: description,
+      amount: Number(amount),
+      created: formatDateToJava(new Date()),
+      spentAt: formatDateToJava(new Date(spentAt))
+    };
 
-    if (response.status == 200) {
+      const params: RequestParams = {
+        apiUrl: FINANCES_URL,
+        method: "POST",
+        body: financeToJSON(finance),
+        credentials: "include"
+      };
+
+    const response = await fetchDataFromAPI(params);
+
+    if (response.statusRep == 200) {
       router.push("/finances");
     } else {
       console.log(response);
@@ -74,7 +72,7 @@ export default function AddFinance() {
   return (
     <div className="text-white mx-9">
       <h1 className="text-5xl font-bold pb-4">Add Finance</h1>
-      <form className="flex flex-col" onSubmit={onSubmit}>
+      <form className="flex flex-col" onSubmit={async (event) => await onSubmit(event)}>
         {
           properties.map(
             (item, index) => {
@@ -87,12 +85,12 @@ export default function AddFinance() {
                     <textarea
                       maxLength={500}
                       className="text-black p-2 rounded w-[30%] mt-2"
-                      onChange={item.event}
+                      onChange={(event) => item.handler(event.target.value)}
                       value={item.value} /> :
                     <input
                       className="text-black px-2 py-1 rounded w-[30%] mt-2"
                       type={item.type}
-                      onChange={item.event}
+                      onChange={(event) => item.handler(event.target.value)}
                       value={item.value.toString()}
                     />}
                 </div>

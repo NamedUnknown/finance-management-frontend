@@ -4,14 +4,12 @@ import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [jwt, setJWT] = useState<string>(null);
+  
 
   useEffect(() => {
-    const jwt = sessionStorage.getItem("jwt");
-    if (jwt != null) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+    setJWT(sessionStorage.getItem("jwt"));
+  }, [])
 
   return (
     <div className="grow p-5">
@@ -22,7 +20,7 @@ export default function Navbar() {
             Finance Manager
           </div>
           {
-            !isAuthenticated && (
+            !jwt && (
               <div className="w-[10%] flex justify-between text-white">
                 <Link href="/login">
                   Login
@@ -38,3 +36,4 @@ export default function Navbar() {
     </div>
   );
 }
+
