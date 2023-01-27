@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
 import { fetchDataFromAPI } from "../components/api/FetchData";
-import { AUTH_URL } from "../components/api/Constants";
+import { USER } from "../components/api/Constants";
 import Image from "next/image";
 import { formatDateToJS } from "../common/formatDate";
+import { User } from "../model/user";
 
-import { useSelector, useDispatch } from "react-redux";
-import { user, setUserData } from "../store/slices/authSlice"
+interface ProfileProps {
+  name: string;
+  nameCamelCase: string;
+}
 
 export default function Profile() {
-  const [isLoading, setIsLoading] = useState(true);
-  const userDetails = useSelector(user);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<User>();
 
-  const dispatch = useDispatch()
 
   useEffect(() => {
     async function fetchProfileInfo() {
-      const response = await fetchDataFromAPI(AUTH_URL, null, null, "GET", "include");
-      dispatch(setUserData(response.body));
+      const response = await fetchDataFromAPI(USER);
+
+      if (response.statusRep.status == 200) {
+        let u: User = response.body as User;
+        u.birthDay = formatDateToJS(u.birthDay as string);
+        u.created = formatDateToJS(u.created as string);
+
+        setUser(u);
+      }
       setIsLoading(false);
     }
 
@@ -27,37 +36,19 @@ export default function Profile() {
     }
   }, []);
 
-  const mainProfileView = [
-    {
-      name: "First name",
-      attribute: "firstName"
-    },
-    {
-      name: "Last name",
-      attribute: "lastName"
-    },
-    {
-      name: "Email",
-      attribute: "email"
-    },
-    {
-      name: "Date of birth",
-      attribute: "birthDay"
-    },
-  ]
-
-  const accountView = [
-    {
-      name: "Roles",
-      attribute: "authorities"
-    },
-    {
-      name: "Account created",
-      attribute: "created"
-    },
+  const mainProfileView: Array<ProfileProps> = [
+    {name: "First name",nameCamelCase: "firstName"},
+    {name: "Last name",nameCamelCase: "lastName"},
+    {name: "Email",nameCamelCase: "email"},
+    {name: "Date of birth",nameCamelCase: "birthDay"},
   ];
 
-  function formatRole(role) {
+  const accountView : Array<ProfileProps> = [
+    {name: "Roles", nameCamelCase: "authorities"},
+    {name: "Account created",nameCamelCase: "created"},
+  ];
+
+  function formatRole(role: string) : string {
     return role.toString().replace("ROLE_", "");
   }
 
@@ -94,24 +85,25 @@ export default function Profile() {
     );
   }
 
-  const properyField = (item, key) => {
+  const properyField = (item: ProfileProps, key: number) => {
+    const dateAttributes: Array<string> = ["created", "birthDay"];
     let attribute;
     const roles = [];
-    if (item.attribute == "created" || item.attribute == "birthDay") {
-      attribute = formatDateToJS(userDetails[item.attribute]).toLocaleDateString();
-    } else if (item.attribute == "authorities") {
+    if (dateAttributes.includes(item.nameCamelCase)) {
+      attribute = (user[item.nameCamelCase] as Date).toLocaleDateString();
+    } else if (item.nameCamelCase == "authorities") {
       attribute = "";
-      const list = userDetails[item.attribute];
+      const list: Array<string> = user[item.nameCamelCase];
       for (const auth of list) {
-        roles.push(formatRole(auth.authority));
+        roles.push(formatRole(auth["authority"]));
       }
     } else {
-      attribute = userDetails[item.attribute];
+      attribute = user[item.nameCamelCase];
     }
     return (
       <div className="pl-3 pr-5 py-3 mb-2 rounded-lg bg-[#423E52] hover:translate-x-3 hover:w-[95%] transition-transform" key={key}>
         <h3 className="mb-1">{item.name}:</h3>
-        {item.attribute == "authorities" ?
+        {item.nameCamelCase == "authorities" ?
           <div>
             {roles.map(
               (item, index) => {

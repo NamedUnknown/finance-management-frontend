@@ -1,5 +1,10 @@
 import { RequestParams } from "../../model/requestParams";
 
+enum FetchType {
+  ALL = "all",
+  LIMITED = "limited",
+}
+
 const SERVER_URL = "http://localhost:8080";
 
 // ! Auth
@@ -96,6 +101,31 @@ export const SAVINGS_DELETE = (id: number) => {
     method: "DELETE",
     credentials: "include",
     body: id
+  };
+}
+
+const CONTACT_URL = SERVER_URL + "/contact";
+
+export const CONTACT_GET_ALL: 
+  RequestParams = {
+    apiUrl: CONTACT_URL + "/" + FetchType.ALL,
+    method: "GET",
+    credentials: "include"
+  };
+
+export const CONTACT_GET_LIMITED: 
+  RequestParams = {
+    apiUrl: CONTACT_URL + "/" + FetchType.LIMITED,
+    method: "GET",
+    credentials: "include"
+  };
+
+export const CONTACT_POST = (body: Object) => {
+  return {
+    apiUrl: CONTACT_URL,
+    method: "POST",
+    credentials: "include",
+    body: body
   };
 }
 

@@ -12,6 +12,6 @@ export function financeToJSON(finance: Finance) : Object {
   map.set("description", finance.description);
   map.set("amount", finance.amount);
   map.set("created", finance.created);
-  map.set("spenAt", finance.spentAt);
+  map.set("spentAt", finance.spentAt);
   return Object.fromEntries(map);
 }

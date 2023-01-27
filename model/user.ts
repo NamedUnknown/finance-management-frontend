@@ -3,8 +3,8 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  birthDay: Date;
-  created: Date;
+  birthDay: Date | string;
+  created: Date | string;
   enabled: boolean;
   authorities: Array<string>
 }

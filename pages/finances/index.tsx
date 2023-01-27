@@ -9,9 +9,17 @@ import { TableProps } from "../../model/tableProps";
 import AlertBox, { AlertProps } from "../../components/AlertBox";
 import EditPanel, { EditPanelProps } from "../../components/EditPanel";
 import DataComponent from "../../components/DataComponent";
+import { useRouter } from "next/router";
 
-export default class FinancesPage extends React.Component implements DataComponent<Finance> {
+export default function FinancePageWrapper() {
+  const router = useRouter();
+  const routing = {
+    toAdd: async () => await router.push("/finances/add")
+  };
+  return <FinancesPage {...routing} />;
+}
 
+class FinancesPage extends React.Component implements DataComponent<Finance> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -20,9 +28,14 @@ export default class FinancesPage extends React.Component implements DataCompone
       showDelete: false, 
       selected: null, 
       loading: true, 
-      errorMessage: null
+      errorMessage: null,
+      routing: props
     };
   }
+
+  toAdd() {
+    (this.state["routing"]["toAdd"] as Function)();
+  }; 
 
   async componentDidMount() {
     const jwt = sessionStorage.getItem("jwt");
@@ -57,7 +70,7 @@ export default class FinancesPage extends React.Component implements DataCompone
   }
 
   onDeleteClicked(item: Finance): void {
-    this.setState({...this.state, showDelete: !this.state["showDelete"], selected: item});
+    this.setState({...this.state, showDelete: !this.state["showDelete"], selected: item, loading: true});
   }
 
   async delete(): Promise<void> {
@@ -71,7 +84,7 @@ export default class FinancesPage extends React.Component implements DataCompone
       } else {
         this.setState({...this.state, errorMessage: "Could not delete finance"});
       }
-      this.setState({...this.state, showDelete: false, selected: null});
+      this.setState({...this.state, showDelete: false, selected: null, loading: false});
     } catch (err) {
       console.log(err);
     }
@@ -146,7 +159,7 @@ export default class FinancesPage extends React.Component implements DataCompone
             <div className="grow flex justify-between">
               <h1 className="text-5xl font-bold pb-4">Finances</h1>
               <button className="my-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded focus:outline-none focus:shadow-outline"
-                onClick={() => {}}>Add finance</button>
+                onClick={() => this.toAdd()}>Add finance</button>
             </div>
             <div className={(this.state["showEdit"] ? "grid-cols-[60%_30%] gap-x-14" : "grid-cols-1 border border-slate-600 rounded-lg") + " grid p-2"}>
               <CustomTable displayProps={displayProps} />

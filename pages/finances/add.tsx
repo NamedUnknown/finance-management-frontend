@@ -1,78 +1,90 @@
 import { FormEvent, useState } from "react";
-import { formatDateHTMLStyle, formatDateToJava } from "../../common/formatDate";
+import { formatDateHTMLStyle, formatDateToJava, formatDateToJS, formatFromHTMLToJS} from "../../common/formatDate";
 
-import { FINANCES_URL } from "../../components/api/Constants";
 import { fetchDataFromAPI } from "../../components/api/FetchData";
 
 import { useRouter } from "next/router";
 import { Finance, financeToJSON } from "../../model/finance";
-import { RequestParams } from "../../model/requestParams";
+import { FINANCES_POST } from "../../components/api/Constants";
+
+interface AddFormProps {
+  name: string;
+  nameCamelCase: string;
+  type: string;
+  value: any;
+  handler(value: any): void;
+}
+
+interface ValueErrorProps {
+  value: string;
+  error?: string;
+}
 
 export default function AddFinance() {
-  const [description, setDescription] = useState<string>("");
-  const [amount, setAmount] = useState<number | string>(0);
-  const [spentAt, setSpentAt] = useState<string>(formatDateHTMLStyle(new Date()));
-
-  const router = useRouter();
-
-  const properties = [
+  const [description, setDescription] = useState<ValueErrorProps>({value: ""});
+  const [amount, setAmount] = useState<ValueErrorProps>({value: "0"});
+  const [spentAt, setSpentAt] = useState<ValueErrorProps>({value: formatDateHTMLStyle(new Date())});
+  let properties: Array<AddFormProps> = [
     {
       // 0 - 500 chars
       name: "Description",
-      property: "description",
+      nameCamelCase: "description",
       type: "text",
       value: description,
-      handler: (desc: string) => setDescription(desc)
+      handler: (desc: string) => setDescription({value: desc})
     },
     {
       name: "Amount",
-      property: "amount",
+      nameCamelCase: "amount",
       type: "text",
       value: amount,
-      hanlder: (am: number) => {
-        setAmount(am);
+      handler: (am: string) => {
+        if (am && Number.isNaN(parseFloat(am))) {
+          setAmount({value: amount.value, error: "Provided value is not a number"})
+          return;
+        }
+        setAmount({value: am});
       }
     },
     {
       // Cant be further than now (past only)
       name: "Spent at",
-      property: "spentAt",
+      nameCamelCase: "spentAt",
       type: "date",
       value: spentAt,
-      handler: (sp: string) => setSpentAt(sp)
-    }
-  ];
+      handler: (sp: string) => setSpentAt({value: sp})
+    }];
 
-  async function onSubmit(event: FormEvent) : Promise<void> {
+  const router = useRouter();
+
+
+  async function submit(event: FormEvent) : Promise<void> {
     event.preventDefault();
-    const finance: Finance = {
-      id: 0,
-      description: description,
-      amount: Number(amount),
-      created: formatDateToJava(new Date()),
-      spentAt: formatDateToJava(new Date(spentAt))
+    try {
+      const finance: Finance = {
+        id: 0,
+        description: description.value,
+        amount: Number(parseFloat(amount.value).toFixed(2)),
+        created: formatDateToJava(new Date()),
+        spentAt: formatDateToJava(formatFromHTMLToJS(spentAt.value))
     };
 
-      const params: RequestParams = {
-        apiUrl: FINANCES_URL,
-        method: "POST",
-        body: financeToJSON(finance),
-        credentials: "include"
-      };
+    const response = await fetchDataFromAPI(FINANCES_POST(financeToJSON(finance)));
 
-    const response = await fetchDataFromAPI(params);
-
-    if (response.statusRep == 200) {
+    if (response.statusRep.status == 200) {
       router.push("/finances");
     } else {
       console.log(response);
+    }
+    } catch (e: any) {
+      console.log(e.message);
     }
   }
 
   return (
     <div className="text-white mx-9">
       <h1 className="text-5xl font-bold pb-4">Add Finance</h1>
-      <form className="flex flex-col" onSubmit={async (event) => await onSubmit(event)}>
+      <form className="flex flex-col" onSubmit={async (event) => await submit(event)}>
         {
           properties.map(
             (item, index) => {
@@ -81,17 +93,18 @@ export default function AddFinance() {
                   <label className="w-full text-xl">
                     <p>{item.name}:</p>
                   </label>
-                  {item.property == "description" ?
+                  {item.value.error && <p className="text-red italic">{item.value.error}</p>}
+                  {item.nameCamelCase == "description" ?
                     <textarea
                       maxLength={500}
                       className="text-black p-2 rounded w-[30%] mt-2"
                       onChange={(event) => item.handler(event.target.value)}
-                      value={item.value} /> :
+                      value={item.value.value.toString()} /> :
                     <input
                       className="text-black px-2 py-1 rounded w-[30%] mt-2"
                       type={item.type}
                       onChange={(event) => item.handler(event.target.value)}
-                      value={item.value.toString()}
+                      value={item.value.value.toString()}
                     />}
                 </div>
               )

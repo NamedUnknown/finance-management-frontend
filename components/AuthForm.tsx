@@ -10,6 +10,7 @@ export interface AuthFormParams {
 }
 
 export interface FormField {
+  value?: any;
   name: string;
   onChange(value: string): void;
   type: string;
@@ -36,6 +37,7 @@ export default function AuthForm(props: any) : JSX.Element {
                     {<input 
                       className="shadow bg-[#ECEEFF] appearance-none border rounded mt-2 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       type={item.type}
+                      value={item.value}
                       required
                       onChange={(event) => item.onChange(event.target.value)}
                     />}

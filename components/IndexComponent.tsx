@@ -19,7 +19,6 @@ interface IndexOptions {
   onClick(): void;
 }
 
-
 export default function IndexComponent() {
   const [user, setUser] = useState<User>(null);
 

@@ -32,6 +32,10 @@ export default function CustomTable(props: any) {
     );
   };
 
+  if (data.length == 0) {
+    return <div>No data</div>;
+  }
+
   return (
     <table className="text-white w-full table-auto text-left h-fit">
       <thead>

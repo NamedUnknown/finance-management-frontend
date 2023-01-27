@@ -7,8 +7,8 @@ import { useRouter } from 'next/router';
 import { ResponseParams } from "../model/resposeParams";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("marchel0925.dev@gmail.com");
+  const [password, setPassword] = useState<string>("test");
   const [responseData, setResponseData] = useState<ResponseParams>(null);
 
   const router = useRouter();
@@ -44,6 +44,7 @@ export default function LoginPage() {
     response: responseData,
     formFields: [
       {
+        value: email,
         name: "email",
         onChange: (value: string) => {
           setEmail(value);
@@ -51,6 +52,7 @@ export default function LoginPage() {
         type: "text"
       },
       {
+        value: password,
         name: "password",
         onChange: (value: string) => {
           setPassword(value);
