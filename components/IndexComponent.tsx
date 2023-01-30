@@ -35,7 +35,7 @@ export default function IndexComponent() {
     if (jwt != null) {
       fetchUser();
     }
-  },[]);
+  }, []);
 
   const router = useRouter();
 
@@ -88,13 +88,6 @@ export default function IndexComponent() {
         icon: MdOutlineCardMembership,
         onClick: () => {
           router.push("/register")
-        }
-      },
-      {
-        name: "Contact",
-        icon: CiMail,
-        onClick: () => {
-          router.push("/contact")
         }
       }
     ];

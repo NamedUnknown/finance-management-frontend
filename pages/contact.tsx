@@ -133,7 +133,7 @@ export default function ContactPage() {
           </button>
         </form>
         <div className="flex flex-col w-full">
-          {contactNotResponded.length > 0 && <ListView listData={{ data: contactNotResponded, title: "Submited" }} />}
+          {contactNotResponded.length > 0 && <ListView listData={{ data: contactNotResponded, title: "Submited", viewAll: () => {}}} />}
         </div>
       </div>
     </div>
